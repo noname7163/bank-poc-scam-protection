@@ -318,11 +318,34 @@ function renderTxForm(existing: AdminTransaction | null): string {
   `;
 }
 
-function openTxForm(existing: AdminTransaction | null): void {
-  if (!el.txFormHost) return;
-  el.txFormHost.innerHTML = renderTxForm(existing);
-  const form = el.txFormHost.querySelector("#tx-form") as HTMLFormElement | null;
-  form?.addEventListener("submit", async (ev) => {
+function openTxForm(
+  existing: AdminTransaction | null,
+  targetRow: HTMLElement | null = null,
+): void {
+  // Always reset any previous open form before opening a new one.
+  closeTxForm();
+
+  let container: HTMLElement | null = null;
+
+  if (existing && targetRow) {
+    // Inline edit: insert a form-row right under the row being edited.
+    // Avoids scrolling back to the top of the section for long lists.
+    const wrapper = document.createElement("li");
+    wrapper.id = "tx-form-host-inline";
+    wrapper.className = "py-3";
+    wrapper.innerHTML = renderTxForm(existing);
+    targetRow.insertAdjacentElement("afterend", wrapper);
+    container = wrapper;
+  } else if (el.txFormHost) {
+    // "New entry" goes above the list, near the add button.
+    el.txFormHost.innerHTML = renderTxForm(existing);
+    container = el.txFormHost;
+  }
+
+  const form = container?.querySelector("#tx-form") as HTMLFormElement | null;
+  if (!form) return;
+
+  form.addEventListener("submit", async (ev) => {
     ev.preventDefault();
     if (!userId) return;
     const fd = new FormData(form);
@@ -353,11 +376,12 @@ function openTxForm(existing: AdminTransaction | null): void {
       showError(t("tx.saveFailed", { message: (err as Error).message }));
     }
   });
-  form?.querySelector("[data-action='cancel']")?.addEventListener("click", () => closeTxForm());
+  form.querySelector("[data-action='cancel']")?.addEventListener("click", () => closeTxForm());
 }
 
 function closeTxForm(): void {
   if (el.txFormHost) el.txFormHost.innerHTML = "";
+  document.getElementById("tx-form-host-inline")?.remove();
 }
 
 el.addBtn?.addEventListener("click", () => openTxForm(null));
@@ -373,7 +397,8 @@ el.txList?.addEventListener("click", async (ev) => {
 
   if (action === "edit") {
     const tx = txCache.find((t) => t.id === txId);
-    if (tx) openTxForm(tx);
+    const row = btn.closest<HTMLElement>("li[data-tx-row]");
+    if (tx) openTxForm(tx, row);
     return;
   }
   if (action === "delete") {
