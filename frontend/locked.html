@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="locked.pageTitle">Banking Shield — Account locked</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body class="min-h-screen bg-red-100 text-slate-900 antialiased">
+    <noscript>
+      <div style="position:fixed;inset:0;z-index:9999;background:#b91c1c;color:#fff;display:flex;align-items:center;justify-content:center;padding:2rem;text-align:center;font-family:system-ui,sans-serif">
+        <div style="max-width:32rem">
+          <h1 style="font-size:2rem;font-weight:bold;margin:0 0 1rem">JavaScript required</h1>
+          <p style="font-size:1.125rem;line-height:1.5;margin:0">This page cannot be displayed safely without JavaScript protection. Please enable JavaScript or clarify this in person at a branch of your bank.</p>
+        </div>
+      </div>
+    </noscript>
+    <main class="mx-auto flex min-h-screen max-w-xl flex-col justify-center px-6 py-10">
+      <section
+        id="scam-banner"
+        class="rounded-2xl bg-red-700 p-6 text-white shadow-xl ring-2 ring-red-900"
+        aria-live="assertive"
+      >
+        <p
+          class="text-xs font-semibold uppercase tracking-widest text-red-100"
+          data-i18n="scam.eyebrow"
+        >Please read this immediately</p>
+        <ul class="mt-2 space-y-2 text-2xl font-extrabold leading-tight">
+          <li data-i18n="scam.q1">Are you on the phone with someone right now?</li>
+          <li data-i18n="scam.q2">Are you following their instructions?</li>
+          <li class="text-3xl" data-i18n="scam.headline">This is a scam. Hang up immediately.</li>
+        </ul>
+        <p class="mt-4 text-sm font-medium text-red-50" data-i18n="scam.body">
+          No bank calls you and asks for transfers, remote access or TAN codes. End the call,
+          close all remote-access tools (AnyDesk, TeamViewer …) and do not discuss this with
+          anyone until you have spoken with your bank in person at a branch.
+        </p>
+      </section>
+
+      <article class="mt-6 rounded-2xl bg-white p-6 shadow-lg ring-1 ring-red-300">
+        <h1
+          class="text-2xl font-bold text-red-900"
+          data-i18n="locked.heading"
+        >Account permanently locked</h1>
+        <p class="mt-2 text-sm text-slate-700" data-i18n="locked.body">
+          Due to repeated security-relevant incidents this account has been deactivated.
+          Re-logging in is not possible until it has been cleared in person at a branch of your bank.
+        </p>
+
+        <div class="mt-5 rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-700 ring-1 ring-slate-200">
+          <p class="font-semibold" data-i18n="locked.howTo">Next steps</p>
+          <ol class="mt-2 list-decimal space-y-1 pl-5 text-slate-600">
+            <li data-i18n="locked.step1">End all remote-access sessions on this device immediately.</li>
+            <li data-i18n="locked.step2">Hang up any active phone call — even if the other party claims to be "the bank" or "the police".</li>
+            <li data-i18n="locked.step3">Go in person to a branch of your bank — bring an ID. Do not clarify anything by phone.</li>
+            <li data-i18n="locked.step4">Do not follow links, TAN codes or instructions from email, SMS or chat.</li>
+          </ol>
+        </div>
+
+        <p class="mt-5 text-xs text-slate-500" data-i18n="locked.note">
+          In this demo there is no path back for this account. Other demo accounts remain usable —
+          the locked one already appears as locked in the login dropdown.
+        </p>
+      </article>
+    </main>
+
+    <script type="module" src="/src/pages/locked.ts"></script>
+  </body>
+</html>

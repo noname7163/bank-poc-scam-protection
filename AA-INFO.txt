@@ -1,0 +1,200 @@
+==============================================================================
+BANKING SHIELD — at a glance
+==============================================================================
+
+Banking Shield is a working proof-of-concept that shows how a banking web
+app can defend itself against the most common online-banking attack
+playbook: a scammer on the phone walking the customer through DevTools
+edits and remote-control sessions ("look, the bank is showing you the
+wrong balance, let me help you fix it"). The defence has five
+independent layers — DOM observers, server-rendered images, a heartbeat
+verifier, self-defence for the shield code itself, and origin checks.
+Each layer is breakable on its own; together they make opportunistic
+scams visibly fail in front of the victim, with a hard scam-warning
+screen that explicitly tells the user to clarify the situation in
+person at a branch — never by phone, because the attacker is usually
+still on the line. A live admin panel lets you toggle each layer per
+account, reset strikes, lock and unlock users, and demo the difference
+side by side. Multi-language UI (English / German / French), full audit
+trail of every tampering attempt.
+
+Stack: TypeScript end-to-end (Fastify + Postgres backend, Vite + vanilla
+DOM frontends), runs end-to-end via `docker compose up`.
+
+
+==============================================================================
+THE DETAILS
+==============================================================================
+
+ARCHITECTURE
+------------
+Five Docker services behind one nginx ingress on port 8080:
+  - nginx        — routes /, /api, /admin, /api/admin and sets the
+                   strict Content-Security-Policy as an HTTP header
+  - frontend     — banking customer app (Vite + vanilla TS + Tailwind)
+  - admin-frontend — separate management app (own Vite project)
+  - backend      — Fastify + node-postgres, shared by both frontends
+  - postgres 16  — schema: users, sessions, accounts, transactions,
+                   quarantine_events, admin_accounts
+
+Customer and admin auth tracks are completely separate: distinct DB
+tables, distinct cookies (`bs_session` vs `bs_admin`), distinct routes
+(`/api/...` vs `/api/admin/...`).
+
+
+THE FIVE PROTECTION LAYERS
+--------------------------
+
+  L1 — Structural monitoring (MutationObserver)
+       Whitelist observer on every [data-protected] element (subtree)
+       watches attributes, character-data and child-list mutations.
+       Blacklist observer on the whole body catches injected nodes by
+       three heuristics: currency-looking text content, position:fixed/
+       absolute with elevated z-index, bounding-rect match with a
+       protected element. Legitimate updates carry a short-lived
+       data-update-nonce that the observer accepts.
+
+  L2 — Server-rendered PNG images for critical values
+       Per-account toggle (balance / transaction amount / IBANs).
+       When enabled, the value is delivered as
+       <img src="/api/render/...?token=HMAC"> instead of plain text.
+       The HMAC token binds to type|id|session_id and is verified
+       server-side. Direct text-edit attacks become physically
+       impossible for that field. Mix-and-match per account in the
+       admin UI lets you show both modes side by side.
+
+  L3 — Verifier heartbeat (every 3 seconds)
+       Client computes SHA-256 fingerprints over the textContent of
+       every protected element (or extracts the HMAC token for
+       image-protected ones) and POSTs the set to /api/verify. Server
+       independently computes the expected fingerprints from current
+       DB state and compares. Mismatch → strike + redirect to
+       /quarantine. Server unreachable after retries → also quarantine.
+       Each successful heartbeat rotates an update-nonce with a 5s TTL.
+
+  L4 — Self-defence for the shield itself
+       (a) Module encapsulation — internals live in the bundled shield
+           closure; only `window.__shield = freeze({ updateProtected,
+           reportTamper })` is exposed.
+       (b) Dual watchdog — two intervals on different periods (~900ms
+           and ~1400ms), each checks the other's last-tick timestamp.
+           Killing one alone is detected within ~1s.
+       (c) Function integrity — SHA-256 of .toString() of the public
+           methods is captured at startup and re-checked on every
+           heartbeat. Catches `window.__shield.updateProtected.toString
+           = () => 'evil'` style patches.
+       (d) DevTools heuristic — outerHeight-jump detector; soft signal
+           only (logged server-side, never auto-quarantines).
+       (e) Strict CSP via nginx header: script-src 'self', no inline
+           scripts, frame-ancestors 'none', plus X-Content-Type-Options,
+           X-Frame-Options DENY, Referrer-Policy.
+
+  L5 — Origin guard
+       Runs as the first thing on every page load.
+       - file:// → the page was saved locally → redirect to the
+         real bank
+       - non-https on non-localhost → impersonator → redirect
+       - hostname mismatch vs the configured bank host → redirect
+       - bootstrap-hash POST to /api/verify/bootstrap; failure (offline
+         or rejected build) → redirect
+       Plus a full-screen <noscript> warning on every protected page.
+
+
+STRIKE MODEL AND RECOVERY
+-------------------------
+Strikes are per-session; the lock threshold is per-user, configurable
+in admin (default 3; set to 1 for instant-lock demos). When the
+threshold is hit, both the session and the user are locked — re-login
+with that account is refused until an admin clears it. Strikes
+auto-decay after one hour of inactivity (so a legitimate user who
+triggers a single false positive isn't punished forever); locked
+accounts never auto-decay.
+
+
+QUARANTINE AND LOCKED PAGES
+---------------------------
+Intentionally simple HTML, no shield, no protected elements — this
+prevents an attacker who already has a foothold from looping the user
+through repeated quarantine triggers. Both pages display a self-healing
+scam-warning banner (snapshot at load + MutationObserver + 500ms
+heartbeat) that snaps back to its original markup if removed or edited
+in DevTools. All copy directs the user to clarify in person at a
+branch, never by phone.
+
+
+ADMIN CONTROL PANEL
+-------------------
+Separate frontend app, separate auth, served under /admin/.
+Capabilities: create / edit / delete demo customer users; edit balance,
+IBAN, holder name; full transaction CRUD (add, edit, delete entries);
+per-field Layer-2 image-protection toggle; per-user strike threshold;
+reset strikes; unlock locked accounts. Admin user is seeded from
+ADMIN_USERNAME / ADMIN_PASSWORD in `.env` (UPSERT at every backend
+boot, so rotating the env value applies on restart).
+
+
+i18n
+----
+English (default + fallback), German, French. Locale is detected from
+navigator.language on first visit and persisted in localStorage.
+Language switcher in the header of every main page. The backend
+respects the client's locale for direction-label fingerprints so a
+locale switch never causes a false positive. Currency and date
+formatting stay locale-fixed (de-DE / Europe/Berlin) everywhere so
+client and server agree byte-for-byte on the verifier fingerprints.
+
+
+WHAT IT CATCHES WELL
+--------------------
+- Direct text-edits via DevTools — caught by L1 instantly
+- Injected overlays (position:fixed with currency text) — L1 blacklist
+- src swap on protected images — caught by both L1 and L3
+- Killing observers / verifier / watchdogs (incl. brute clearInterval) —
+  surviving layer reports, or the heartbeat-offline check trips
+- Patching shield internals via .toString overwrite — L4 integrity
+- Save-Page-As + re-open — L5 origin redirect
+- Repeated attempts → strike accumulator + permanent lock
+
+
+WHAT IT DOES NOT DEFEND AGAINST
+-------------------------------
+The DOM-side defence cannot stop the following — they need different
+mitigations (extension policy, secure transport, hardened devices):
+- A pre-prepared attacker script that knows the shield internals and
+  patches MutationObserver.prototype.observe / Function.prototype.
+  toString / fetch / the verifier reference BEFORE the shield boots.
+- Runtime debugging with breakpoints to mutate variables in memory.
+- Malicious browser extensions with permission to modify page contents.
+- Compromised TLS / man-in-the-middle on the network.
+
+
+PRODUCTION GAPS BEFORE THIS WOULD SHIP
+--------------------------------------
+- Subresource Integrity on the shield bundle (skipped here because
+  Vite-HMR rehashes on every change — add via vite-plugin-sri or
+  similar in the production build pipeline).
+- WebSocket-pushed value updates so admin edits don't risk false-
+  positive quarantines on active customer sessions.
+- Admin under a separate origin instead of sharing :8080 with the bank.
+- HMAC render-tokens to also bind to value + expiry per the original
+  spec (the demo binds only type|id|session for robustness against
+  admin edits).
+- CSP report-uri so blocked-script attempts surface in monitoring.
+- Server-side audit log into a real store, not just structured JSON
+  on stdout.
+- The demo-status endpoint that lists locked emails on the login page
+  is a privacy hack — fine for a demo, remove for real auth.
+
+
+HOW TO RUN AND DEMO
+-------------------
+  cp .env.example .env
+  docker compose up --build
+
+Banking app:  http://localhost:8080/
+Admin app:    http://localhost:8080/admin/    (admin / admin123 by default)
+
+Five copy-pasteable attack snippets are in README.md (Attack A–E).
+Best demo flow: open both tabs side by side, change a user's protection
+settings in admin, switch to the banking tab, paste an attack snippet,
+watch the result, reset in admin, try the next snippet.

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="login.pageTitle">Banking Shield — Admin Sign in</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body class="min-h-screen bg-slate-900 text-slate-100 antialiased">
+    <main class="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
+      <div class="rounded-2xl bg-slate-800 p-8 shadow-xl ring-1 ring-slate-700">
+        <header class="mb-6 flex items-start justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="grid h-10 w-10 place-items-center rounded-lg bg-amber-500 text-slate-900 font-bold">A</div>
+            <div>
+              <h1 class="text-xl font-semibold" data-i18n="login.title">Banking Shield — Admin</h1>
+              <p class="text-sm text-slate-400" data-i18n="login.subtitle">Demo account management</p>
+            </div>
+          </div>
+          <select
+            data-language-switcher
+            aria-label="Language"
+            class="rounded-lg border border-slate-600 bg-slate-900 px-2 py-1 text-xs text-slate-100"
+          >
+            <option value="en">English</option>
+            <option value="de">Deutsch</option>
+            <option value="fr">Français</option>
+          </select>
+        </header>
+
+        <form id="login-form" class="space-y-4" autocomplete="off">
+          <label class="block">
+            <span class="text-sm font-medium text-slate-200" data-i18n="login.username">Username</span>
+            <input
+              type="text"
+              name="username"
+              required
+              data-i18n-placeholder="login.usernamePlaceholder"
+              placeholder="admin"
+              class="mt-1 w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-slate-100 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/30"
+            />
+          </label>
+          <label class="block">
+            <span class="text-sm font-medium text-slate-200" data-i18n="login.password">Password</span>
+            <input
+              type="password"
+              name="password"
+              required
+              data-i18n-placeholder="login.passwordPlaceholder"
+              placeholder="admin123"
+              class="mt-1 w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-slate-100 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/30"
+            />
+          </label>
+          <button
+            type="submit"
+            data-i18n="login.submit"
+            class="w-full rounded-lg bg-amber-500 px-4 py-2 font-medium text-slate-900 shadow-sm hover:bg-amber-400"
+          >
+            Sign in
+          </button>
+        </form>
+
+        <p id="status" class="mt-6 text-xs text-slate-400"></p>
+        <p class="mt-2 text-xs text-slate-500" data-i18n="login.envHint">
+          Defaults from .env: ADMIN_USERNAME / ADMIN_PASSWORD.
+        </p>
+      </div>
+    </main>
+
+    <script type="module" src="/src/pages/login.ts"></script>
+  </body>
+</html>

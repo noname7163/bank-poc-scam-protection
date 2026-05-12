@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="tx.pageTitle">Banking Shield — Transaction</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body class="min-h-screen bg-slate-100 text-slate-900 antialiased">
+    <noscript>
+      <div style="position:fixed;inset:0;z-index:9999;background:#b91c1c;color:#fff;display:flex;align-items:center;justify-content:center;padding:2rem;text-align:center;font-family:system-ui,sans-serif">
+        <div style="max-width:32rem">
+          <h1 style="font-size:2rem;font-weight:bold;margin:0 0 1rem">JavaScript required</h1>
+          <p style="font-size:1.125rem;line-height:1.5;margin:0">This page cannot be displayed safely without JavaScript protection. Please enable JavaScript or clarify this in person at a branch of your bank.</p>
+        </div>
+      </div>
+    </noscript>
+    <header class="border-b border-slate-200 bg-white">
+      <div class="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
+        <div class="flex items-center gap-3">
+          <div class="grid h-9 w-9 place-items-center rounded-lg bg-blue-600 text-white font-bold">BS</div>
+          <span class="text-lg font-semibold" data-i18n="login.title">Banking Shield</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="user-name" class="text-sm text-slate-600"></span>
+          <select
+            data-language-switcher
+            aria-label="Language"
+            class="rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs"
+          >
+            <option value="en">English</option>
+            <option value="de">Deutsch</option>
+            <option value="fr">Français</option>
+          </select>
+          <button
+            id="logout-btn"
+            data-i18n="common.signOut"
+            class="rounded-lg border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+          >
+            Sign out
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-3xl px-6 py-8 space-y-6">
+      <a
+        href="/overview"
+        data-i18n="tx.back"
+        class="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900"
+      >
+        ← Back to overview
+      </a>
+
+      <article id="tx-card" class="hidden rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+        <header class="flex items-start justify-between gap-4">
+          <div>
+            <span
+              id="tx-direction-badge"
+              data-protected="tx-direction"
+              class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium"
+            ></span>
+            <p id="tx-date" data-protected="tx-date" class="mt-2 text-sm text-slate-500"></p>
+          </div>
+          <p
+            id="tx-amount"
+            data-protected="tx-amount"
+            class="text-3xl font-semibold tabular-nums"
+          ></p>
+        </header>
+
+        <hr class="my-6 border-slate-200" />
+
+        <dl class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div>
+            <dt
+              class="text-xs font-semibold uppercase tracking-wide text-slate-500"
+              data-i18n="tx.sender"
+            >Sender</dt>
+            <dd id="tx-sender-name" data-protected="tx-sender-name" class="mt-1 font-medium"></dd>
+            <dd
+              id="tx-sender-iban"
+              data-protected="tx-sender-iban"
+              class="mt-0.5 font-mono text-sm text-slate-600"
+            ></dd>
+          </div>
+          <div>
+            <dt
+              class="text-xs font-semibold uppercase tracking-wide text-slate-500"
+              data-i18n="tx.recipient"
+            >Recipient</dt>
+            <dd id="tx-recipient-name" data-protected="tx-recipient-name" class="mt-1 font-medium"></dd>
+            <dd
+              id="tx-recipient-iban"
+              data-protected="tx-recipient-iban"
+              class="mt-0.5 font-mono text-sm text-slate-600"
+            ></dd>
+          </div>
+          <div class="sm:col-span-2">
+            <dt
+              class="text-xs font-semibold uppercase tracking-wide text-slate-500"
+              data-i18n="tx.reference"
+            >Reference</dt>
+            <dd id="tx-reference" data-protected="tx-reference" class="mt-1"></dd>
+          </div>
+          <div>
+            <dt
+              class="text-xs font-semibold uppercase tracking-wide text-slate-500"
+              data-i18n="tx.id"
+            >Transaction ID</dt>
+            <dd id="tx-id" class="mt-1 font-mono text-sm text-slate-600"></dd>
+          </div>
+          <div>
+            <dt
+              class="text-xs font-semibold uppercase tracking-wide text-slate-500"
+              data-i18n="tx.category"
+            >Category</dt>
+            <dd id="tx-type" class="mt-1 text-sm"></dd>
+          </div>
+        </dl>
+      </article>
+
+      <p id="loading" class="text-sm text-slate-500" data-i18n="tx.loading">Loading transaction …</p>
+      <p id="error" class="hidden rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700"></p>
+    </main>
+
+    <script type="module" src="/src/pages/transaction.ts"></script>
+  </body>
+</html>

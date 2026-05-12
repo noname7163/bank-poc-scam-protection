@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="dashboard.pageTitle">Banking Shield — Admin Dashboard</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body class="min-h-screen bg-slate-900 text-slate-100 antialiased">
+    <header class="border-b border-slate-700 bg-slate-800">
+      <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+        <div class="flex items-center gap-3">
+          <div class="grid h-9 w-9 place-items-center rounded-lg bg-amber-500 text-slate-900 font-bold">A</div>
+          <span class="text-lg font-semibold">Admin</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="admin-name" class="text-sm text-slate-300"></span>
+          <select
+            data-language-switcher
+            aria-label="Language"
+            class="rounded-lg border border-slate-600 bg-slate-900 px-2 py-1 text-xs text-slate-100"
+          >
+            <option value="en">English</option>
+            <option value="de">Deutsch</option>
+            <option value="fr">Français</option>
+          </select>
+          <button
+            id="logout-btn"
+            data-i18n="common.signOut"
+            class="rounded-lg border border-slate-600 px-3 py-1.5 text-sm hover:bg-slate-700"
+          >
+            Sign out
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-5xl px-6 py-8">
+      <div class="mb-4 flex items-center justify-between">
+        <h1 class="text-2xl font-semibold" data-i18n="dashboard.heading">Demo accounts</h1>
+        <button
+          id="show-create-btn"
+          data-i18n="dashboard.newUser"
+          class="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-500"
+        >
+          + New user
+        </button>
+      </div>
+
+      <div id="create-form-host" class="mb-4"></div>
+
+      <div id="user-list" class="space-y-3">
+        <p class="text-sm text-slate-400" data-i18n="dashboard.loading">Loading …</p>
+      </div>
+
+      <p id="error" class="mt-6 hidden rounded-lg bg-red-950 px-4 py-3 text-sm text-red-200 ring-1 ring-red-800"></p>
+    </main>
+
+    <script type="module" src="/src/pages/dashboard.ts"></script>
+  </body>
+</html>

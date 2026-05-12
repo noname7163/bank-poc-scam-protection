@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="account.pageTitle">Banking Shield — Account</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body class="min-h-screen bg-slate-900 text-slate-100 antialiased">
+    <header class="border-b border-slate-700 bg-slate-800">
+      <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+        <div class="flex items-center gap-3">
+          <div class="grid h-9 w-9 place-items-center rounded-lg bg-amber-500 text-slate-900 font-bold">A</div>
+          <span class="text-lg font-semibold">Admin</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="admin-name" class="text-sm text-slate-300"></span>
+          <select
+            data-language-switcher
+            aria-label="Language"
+            class="rounded-lg border border-slate-600 bg-slate-900 px-2 py-1 text-xs text-slate-100"
+          >
+            <option value="en">English</option>
+            <option value="de">Deutsch</option>
+            <option value="fr">Français</option>
+          </select>
+          <button
+            id="logout-btn"
+            data-i18n="common.signOut"
+            class="rounded-lg border border-slate-600 px-3 py-1.5 text-sm hover:bg-slate-700"
+          >
+            Sign out
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-5xl px-6 py-8 space-y-6">
+      <a
+        href="/admin/dashboard.html"
+        data-i18n="account.back"
+        class="inline-flex items-center gap-2 text-sm text-slate-300 hover:text-slate-100"
+      >
+        ← Back to dashboard
+      </a>
+
+      <section class="rounded-2xl bg-slate-800 p-6 shadow-sm ring-1 ring-slate-700">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h1 class="text-lg font-semibold" data-i18n="security.heading">Security status</h1>
+            <p id="status-line" class="mt-2 text-sm text-slate-300">—</p>
+            <p id="status-hint" class="mt-1 text-xs text-slate-500"></p>
+          </div>
+          <div class="flex flex-wrap gap-2 justify-end">
+            <button
+              id="reset-strikes-btn"
+              type="button"
+              data-i18n="security.resetStrikes"
+              class="hidden rounded-lg border border-slate-500 px-3 py-1.5 text-sm hover:bg-slate-700"
+            >
+              Reset strikes
+            </button>
+            <button
+              id="unlock-btn"
+              type="button"
+              data-i18n="security.unlock"
+              class="hidden rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-500"
+            >
+              Unlock
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="rounded-2xl bg-slate-800 p-6 shadow-sm ring-1 ring-slate-700">
+        <h1 class="text-lg font-semibold" data-i18n="userSettings.heading">User settings</h1>
+        <p id="user-email" class="mt-1 text-xs text-slate-400 font-mono"></p>
+        <form id="user-form" class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <label class="block">
+            <span
+              class="text-xs font-medium uppercase tracking-wide text-slate-400"
+              data-i18n="userSettings.displayName"
+            >Display name</span>
+            <input
+              type="text"
+              name="display_name"
+              class="mt-1 w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2"
+            />
+          </label>
+          <label class="block">
+            <span
+              class="text-xs font-medium uppercase tracking-wide text-slate-400"
+              data-i18n="userSettings.maxStrikes"
+            >Locks after (strikes)</span>
+            <input
+              type="number"
+              name="max_strikes"
+              min="1"
+              max="50"
+              class="mt-1 w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2"
+            />
+          </label>
+          <label class="block sm:col-span-2">
+            <span
+              class="text-xs font-medium uppercase tracking-wide text-slate-400"
+              data-i18n="userSettings.password"
+            >New password (empty = no change)</span>
+            <input
+              type="text"
+              name="password"
+              data-i18n-placeholder="userSettings.passwordPlaceholder"
+              placeholder="leave blank"
+              class="mt-1 w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2"
+            />
+          </label>
+          <div class="sm:col-span-2 flex items-center justify-between">
+            <p id="user-status" class="text-xs text-slate-400"></p>
+            <button
+              type="submit"
+              data-i18n="userSettings.save"
+              class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-amber-400"
+            >
+              Save user
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="rounded-2xl bg-slate-800 p-6 shadow-sm ring-1 ring-slate-700">
+        <h2 class="text-lg font-semibold" data-i18n="accountData.heading">Account data</h2>
+        <form id="account-form" class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <label class="block">
+            <span
+              class="text-xs font-medium uppercase tracking-wide text-slate-400"
+              data-i18n="accountData.balance"
+            >Balance (€)</span>
+            <input
+              type="text"
+              name="balance"
+              inputmode="decimal"
+              class="mt-1 w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-slate-100 focus:border-amber-500 focus:outline-none"
+            />
+          </label>
+          <label class="block">
+            <span
+              class="text-xs font-medium uppercase tracking-wide text-slate-400"
+              data-i18n="accountData.holder"
+            >Holder</span>
+            <input
+              type="text"
+              name="holder_name"
+              class="mt-1 w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-slate-100 focus:border-amber-500 focus:outline-none"
+            />
+          </label>
+          <label class="block sm:col-span-2">
+            <span
+              class="text-xs font-medium uppercase tracking-wide text-slate-400"
+              data-i18n="accountData.iban"
+            >IBAN</span>
+            <input
+              type="text"
+              name="iban"
+              class="mt-1 w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 font-mono text-slate-100 focus:border-amber-500 focus:outline-none"
+            />
+          </label>
+          <div class="sm:col-span-2 flex items-center justify-between">
+            <p id="account-status" class="text-xs text-slate-400"></p>
+            <button
+              type="submit"
+              data-i18n="accountData.save"
+              class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-amber-400"
+            >
+              Save
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="rounded-2xl bg-slate-800 p-6 shadow-sm ring-1 ring-slate-700">
+        <h2 class="text-lg font-semibold" data-i18n="protection.heading">
+          Layer 2 — image protection per field
+        </h2>
+        <p class="mt-1 text-xs text-slate-400" data-i18n="protection.desc">
+          When enabled, the value is rendered as a signed PNG by the server instead of as text.
+          DevTools text edits become physically impossible for that field — the demo shows the
+          difference convincingly.
+        </p>
+        <form id="protection-form" class="mt-4 space-y-3">
+          <label class="flex items-start gap-3">
+            <input type="checkbox" name="balance" class="mt-1 h-4 w-4 rounded border-slate-500 bg-slate-900 accent-amber-500" />
+            <span>
+              <span class="block text-sm font-medium" data-i18n="protection.balance">Balance (overview)</span>
+              <span class="block text-xs text-slate-400" data-i18n="protection.balanceDesc">The big balance number on /overview.</span>
+            </span>
+          </label>
+          <label class="flex items-start gap-3">
+            <input type="checkbox" name="tx_amount" class="mt-1 h-4 w-4 rounded border-slate-500 bg-slate-900 accent-amber-500" />
+            <span>
+              <span class="block text-sm font-medium" data-i18n="protection.txAmount">Amount (transaction detail)</span>
+              <span class="block text-xs text-slate-400" data-i18n="protection.txAmountDesc">The amount on /transaction/&lt;id&gt;.</span>
+            </span>
+          </label>
+          <label class="flex items-start gap-3">
+            <input type="checkbox" name="tx_iban" class="mt-1 h-4 w-4 rounded border-slate-500 bg-slate-900 accent-amber-500" />
+            <span>
+              <span class="block text-sm font-medium" data-i18n="protection.txIban">IBANs (transaction detail)</span>
+              <span class="block text-xs text-slate-400" data-i18n="protection.txIbanDesc">Sender and recipient IBAN on /transaction/&lt;id&gt;.</span>
+            </span>
+          </label>
+          <div class="flex items-center justify-between pt-2">
+            <p id="protection-status" class="text-xs text-slate-400"></p>
+            <button
+              type="submit"
+              data-i18n="protection.save"
+              class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-amber-400"
+            >
+              Save image protection
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="rounded-2xl bg-slate-800 p-6 shadow-sm ring-1 ring-slate-700">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-semibold" data-i18n="tx.heading">Transactions</h2>
+          <button
+            id="add-tx-btn"
+            data-i18n="tx.new"
+            class="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-500"
+          >
+            + New entry
+          </button>
+        </div>
+        <div id="tx-form-host" class="mt-4"></div>
+        <ul id="tx-list" class="mt-4 divide-y divide-slate-700">
+          <li class="py-3 text-sm text-slate-400" data-i18n="tx.loading">Loading …</li>
+        </ul>
+      </section>
+
+      <p id="error" class="hidden rounded-lg bg-red-950 px-4 py-3 text-sm text-red-200 ring-1 ring-red-800"></p>
+    </main>
+
+    <script type="module" src="/src/pages/account.ts"></script>
+  </body>
+</html>

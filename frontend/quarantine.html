@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="quarantine.pageTitle">Banking Shield — Security warning</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body class="min-h-screen bg-red-50 text-slate-900 antialiased">
+    <noscript>
+      <div style="position:fixed;inset:0;z-index:9999;background:#b91c1c;color:#fff;display:flex;align-items:center;justify-content:center;padding:2rem;text-align:center;font-family:system-ui,sans-serif">
+        <div style="max-width:32rem">
+          <h1 style="font-size:2rem;font-weight:bold;margin:0 0 1rem">JavaScript required</h1>
+          <p style="font-size:1.125rem;line-height:1.5;margin:0">This page cannot be displayed safely without JavaScript protection. Please enable JavaScript or clarify this in person at a branch of your bank.</p>
+        </div>
+      </div>
+    </noscript>
+    <main class="mx-auto flex min-h-screen max-w-xl flex-col justify-center px-6 py-10">
+      <section
+        id="scam-banner"
+        class="rounded-2xl bg-red-700 p-6 text-white shadow-lg ring-2 ring-red-900"
+        aria-live="assertive"
+      >
+        <p
+          class="text-xs font-semibold uppercase tracking-widest text-red-100"
+          data-i18n="scam.eyebrow"
+        >Please read this immediately</p>
+        <ul class="mt-2 space-y-2 text-2xl font-extrabold leading-tight">
+          <li data-i18n="scam.q1">Are you on the phone with someone right now?</li>
+          <li data-i18n="scam.q2">Are you following their instructions?</li>
+          <li class="text-3xl" data-i18n="scam.headline">This is a scam. Hang up immediately.</li>
+        </ul>
+        <p class="mt-4 text-sm font-medium text-red-50" data-i18n="scam.body">
+          No bank calls you and asks for transfers, remote access or TAN codes. End the call,
+          close all remote-access tools (AnyDesk, TeamViewer …) and do not discuss this with
+          anyone until you have spoken with your bank in person at a branch.
+        </p>
+      </section>
+
+      <article class="mt-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-red-200">
+        <h1
+          class="text-lg font-semibold text-red-900"
+          data-i18n="quarantine.subheading"
+        >Session paused</h1>
+        <p class="mt-2 text-sm text-slate-700" data-i18n="quarantine.body">
+          Our protection layer detected an unexpected change on this page. Your session has been
+          paused for safety.
+        </p>
+
+        <dl class="mt-5 space-y-3 border-t border-slate-200 pt-5">
+          <div>
+            <dt
+              class="text-xs font-semibold uppercase tracking-wide text-slate-500"
+              data-i18n="quarantine.reasonLabel"
+            >Reason</dt>
+            <dd id="reason" class="mt-1 text-sm">—</dd>
+          </div>
+          <div>
+            <dt
+              class="text-xs font-semibold uppercase tracking-wide text-slate-500"
+              data-i18n="quarantine.strikeLabel"
+            >Warning</dt>
+            <dd id="strike-line" class="mt-1 text-sm">—</dd>
+          </div>
+        </dl>
+
+        <p
+          id="threshold-note"
+          class="mt-5 rounded-lg bg-amber-50 px-4 py-3 text-xs text-amber-900 ring-1 ring-amber-200"
+        ></p>
+
+        <div class="mt-5 flex justify-end">
+          <a
+            href="/overview"
+            data-i18n="quarantine.backToOverview"
+            class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
+          >
+            Back to overview
+          </a>
+        </div>
+      </article>
+    </main>
+
+    <script type="module" src="/src/pages/quarantine.ts"></script>
+  </body>
+</html>
